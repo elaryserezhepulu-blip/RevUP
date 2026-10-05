@@ -1,0 +1,24 @@
+# Spin up a local Postgres for development:
+#   docker compose up -d
+# Then in .env:  DATABASE_URL=postgres://revup:revup@localhost:5432/revup
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: revup-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: revup
+      POSTGRES_PASSWORD: revup
+      POSTGRES_DB: revup
+    ports:
+      - "5432:5432"
+    volumes:
+      - revup_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U revup -d revup"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  revup_pgdata:

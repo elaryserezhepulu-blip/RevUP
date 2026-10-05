@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RevUp — smart reordering for retail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   RevUp v2 — minimal, modern UI
+   Tweak colours/spacing here; everything keys off these variables.
+   ============================================================ */
+:root {
+  --bg: #F7F8F6;
+  --panel: #FFFFFF;
+  --ink: #14181C;
+  --soft: #687078;
+  --faint: #9AA2A8;
+  --line: #E8EAE7;
+  --accent: #0B8A5B;
+  --accent-ink: #06301F;
+  --accent-soft: #E7F4EE;
+  --amber: #B7791F;
+  --amber-soft: #FBF1DF;
+  --red: #C0392B;
+  --red-soft: #FBE9E7;
+  --blue: #2D6E8E;
+  --blue-soft: #E5EFF3;
+  --side: #0E1A14;
+  --side-line: rgba(255,255,255,.08);
+  --side-text: rgba(255,255,255,.60);
+  --side-active: rgba(255,255,255,.09);
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(20,24,28,.04), 0 12px 32px rgba(20,24,28,.07);
+  --shadow-sm: 0 1px 2px rgba(20,24,28,.05), 0 4px 14px rgba(20,24,28,.05);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; line-height: 1.5; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select { font-family: inherit; }
+.tnum { font-variant-numeric: tabular-nums; }
+.muted { color: var(--soft); }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.fade { animation: fade .28s ease both; }
+
+/* ---------- buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 18px; border-radius: 10px; font-size: 14px; font-weight: 600; transition: transform .04s, background .15s, border-color .15s, box-shadow .15s; border: 1px solid transparent; white-space: nowrap; }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #0A7A50; }
+.btn-ghost { background: var(--panel); color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { border-color: #D4D7D3; }
+.btn-white { background: #fff; color: var(--accent-ink); }
+.btn-white:hover { box-shadow: var(--shadow-sm); }
+.btn-block { width: 100%; }
+.btn-lg { padding: 13px 22px; font-size: 15px; }
+
+/* ---------- fields ---------- */
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--soft); margin-bottom: 6px; }
+.field input, .field select { width: 100%; padding: 11px 13px; font-size: 14.5px; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; outline: none; transition: border-color .15s, box-shadow .15s; }
+.field select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23687078' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.form-error { color: var(--red); font-size: 13px; margin: 2px 0 12px; }
+
+/* ---------- landing ---------- */
+.landing { min-height: 100vh; display: flex; flex-direction: column; }
+.land-nav { display: flex; align-items: center; max-width: 1080px; width: 100%; margin: 0 auto; padding: 22px 28px; }
+.land-nav .logo { font-size: 19px; }
+.land-nav .sp { flex: 1; }
+.land-hero { max-width: 1080px; margin: 0 auto; width: 100%; padding: 48px 28px 40px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; }
+.land-hero h1 { font-size: 46px; line-height: 1.08; letter-spacing: -.03em; font-weight: 800; margin: 0 0 18px; }
+.land-hero h1 .g { color: var(--accent); }
+.land-hero p { font-size: 17px; color: var(--soft); max-width: 46ch; margin: 0 0 26px; }
+.land-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.land-points { display: flex; gap: 22px; margin-top: 30px; flex-wrap: wrap; }
+.land-points div { font-size: 13.5px; color: var(--soft); display: flex; align-items: center; gap: 7px; }
+.land-art { background: var(--accent-ink); border-radius: 22px; padding: 26px; color: #fff; box-shadow: var(--shadow); background-image: radial-gradient(600px 300px at 100% 0%, rgba(11,138,91,.5), transparent 60%); }
+.land-art .mini-tile { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.10); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+.land-art .mini-tile .l { font-size: 11.5px; color: rgba(255,255,255,.6); }
+.land-art .mini-tile .v { font-size: 22px; font-weight: 800; margin-top: 3px; letter-spacing: -.02em; }
+.land-art .bars { display: flex; align-items: flex-end; gap: 8px; height: 90px; margin-top: 6px; }
+.land-art .bars span { flex: 1; background: var(--accent); border-radius: 5px 5px 0 0; opacity: .9; }
+
+/* ---------- auth ---------- */
+.auth { min-height: 100vh; display: grid; grid-template-columns: 1.05fr 1fr; }
+.auth-brand { background: var(--accent-ink); color: #fff; padding: 56px; display: flex; flex-direction: column; justify-content: space-between; background-image: radial-gradient(900px 400px at 0% 0%, rgba(11,138,91,.55), transparent 60%); }
+.auth-brand .logo { font-size: 22px; }
+.auth-brand h1 { font-size: 33px; line-height: 1.18; font-weight: 800; letter-spacing: -.02em; margin: 0 0 14px; max-width: 15ch; }
+.auth-brand p { color: rgba(255,255,255,.78); font-size: 15px; max-width: 42ch; margin: 0; }
+.auth-points { list-style: none; padding: 0; margin: 26px 0 0; }
+.auth-points li { display: flex; gap: 10px; align-items: flex-start; color: rgba(255,255,255,.86); font-size: 14.5px; margin-bottom: 12px; }
+.auth-points svg { flex: none; margin-top: 2px; }
+.auth-form-wrap { display: flex; align-items: center; justify-content: center; padding: 40px 28px; }
+.auth-card { width: 100%; max-width: 380px; }
+.auth-card h2 { font-size: 23px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 4px; }
+.auth-card .sub { color: var(--soft); font-size: 14px; margin: 0 0 24px; }
+.auth-switch { margin-top: 18px; font-size: 13.5px; color: var(--soft); text-align: center; }
+.auth-switch button { color: var(--accent); font-weight: 600; }
+.auth-back { margin-top: 18px; text-align: center; }
+.auth-back button { color: var(--soft); font-size: 13px; }
+
+/* ---------- logo ---------- */
+.logo { display: inline-flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.02em; }
+.logo-mark { width: 30px; height: 30px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; flex: none; }
+.logo-mark.lg { width: 38px; height: 38px; border-radius: 11px; }
+
+/* ---------- app shell (sidebar + main) ---------- */
+.shell { display: grid; grid-template-columns: 244px 1fr; min-height: 100vh; }
+.sidebar { background: var(--side); color: #fff; display: flex; flex-direction: column; padding: 20px 16px; position: sticky; top: 0; height: 100vh; }
+.side-logo { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 19px; letter-spacing: -.02em; padding: 6px 8px 22px; }
+.side-nav { display: flex; flex-direction: column; gap: 3px; }
+.side-link { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 10px; color: var(--side-text); font-size: 14px; font-weight: 600; text-align: left; transition: background .15s, color .15s; width: 100%; }
+.side-link:hover { color: #fff; background: var(--side-active); }
+.side-link.active { color: #fff; background: var(--side-active); }
+.side-link svg { flex: none; opacity: .9; }
+.side-foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--side-line); }
+.side-user { display: flex; align-items: center; gap: 10px; padding: 6px 8px 12px; }
+.side-avatar { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 15px; color: #fff; flex: none; }
+.side-biz { font-size: 13.5px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+.side-mail { font-size: 11.5px; color: var(--side-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+.main { min-width: 0; }
+.main-inner { max-width: 980px; margin: 0 auto; padding: 36px 32px 72px; }
+
+/* ---------- page head ---------- */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.page-head h2 { font-size: 24px; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+.page-head p { color: var(--soft); font-size: 14px; margin: 4px 0 0; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--soft); font-size: 13.5px; font-weight: 600; margin-bottom: 14px; }
+.back-link:hover { color: var(--ink); }
+
+/* ---------- tiles ---------- */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.tile .label { font-size: 12.5px; color: var(--soft); font-weight: 600; }
+.tile .value { font-size: 27px; font-weight: 800; letter-spacing: -.02em; margin-top: 8px; }
+.tile .value.accent { color: var(--accent); }
+.tile .delta { font-size: 12.5px; color: var(--soft); margin-top: 2px; }
+
+/* ---------- panels ---------- */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.panel-head { padding: 16px 20px; border-bottom: 1px solid var(--line); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tag-ai { font-size: 10.5px; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: .04em; display: inline-flex; align-items: center; gap: 4px; }
+
+/* ---------- store grid ---------- */
+.store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.store-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; cursor: pointer; transition: box-shadow .15s, transform .08s, border-color .15s; }
+.store-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); border-color: #DEE1DD; }
+.store-card .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); display: grid; place-items: center; margin-bottom: 14px; }
+.store-card h3 { font-size: 16px; font-weight: 700; margin: 0 0 2px; letter-spacing: -.01em; }
+.store-card .loc { color: var(--soft); font-size: 13px; }
+.store-card .meta { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-size: 12.5px; color: var(--soft); }
+.store-card .meta b { display: block; color: var(--ink); font-size: 15px; font-weight: 700; margin-top: 1px; }
+.store-add { border: 1px dashed #D0D4CF; background: transparent; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--soft); font-weight: 600; font-size: 14px; min-height: 188px; cursor: pointer; transition: border-color .15s, color .15s; }
+.store-add:hover { border-color: var(--accent); color: var(--accent); }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+
+/* ---------- connection bar ---------- */
+.conn-bar { display: flex; align-items: center; gap: 11px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 18px; margin-bottom: 18px; flex-wrap: wrap; }
+.conn-text { font-size: 13.5px; } .conn-text b { font-weight: 600; }
+.conn-actions { margin-left: auto; display: flex; gap: 8px; }
+
+/* ---------- tabs ---------- */
+.tabs { display: inline-flex; gap: 2px; background: #EEF0ED; border-radius: 11px; padding: 4px; margin-bottom: 18px; }
+.tabs button { padding: 9px 20px; border-radius: 8px; font-size: 13.5px; font-weight: 600; color: var(--soft); display: inline-flex; align-items: center; gap: 7px; }
+.tabs button.active { background: #fff; color: var(--ink); box-shadow: var(--shadow-sm); }
+.seg { display: inline-flex; background: #EEF0ED; border-radius: 11px; padding: 4px; gap: 2px; }
+.seg button { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--soft); }
+.seg button.active { background: #fff; color: var(--ink); box-shadow: var(--shadow-sm); }
+
+/* ---------- search ---------- */
+.search { position: relative; }
+.search input { width: 220px; padding: 9px 12px 9px 34px; font-size: 13.5px; border: 1px solid var(--line); border-radius: 9px; outline: none; background: #fff; transition: border-color .15s, box-shadow .15s; }
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--faint); }
+
+/* ---------- ranking ---------- */
+.rank-row { display: flex; align-items: center; gap: 12px; padding: 12px 20px; }
+.rank-row + .rank-row { border-top: 1px solid var(--line); }
+.rank-no { width: 24px; font-size: 13px; font-weight: 800; color: var(--faint); text-align: center; }
+.rank-main { flex: 1; min-width: 0; }
+.rank-name { font-size: 14px; font-weight: 600; }
+.rank-bar { height: 6px; background: var(--accent-soft); border-radius: 4px; margin-top: 6px; overflow: hidden; }
+.rank-bar span { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.rank-qty { font-size: 13.5px; font-weight: 700; text-align: right; }
+.rank-qty small { display: block; font-weight: 500; color: var(--soft); font-size: 11.5px; }
+
+/* ---------- recommendations ---------- */
+.rec-row { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-left: 3px solid var(--accent); }
+.rec-row + .rec-row { border-top: 1px solid var(--line); }
+.rec-main { flex: 1; min-width: 0; }
+.rec-name { font-size: 14px; font-weight: 600; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; margin-top: 4px; }
+.rec-order { text-align: right; min-width: 58px; }
+.rec-order .n { font-size: 24px; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+.rec-order .u { font-size: 10px; color: var(--soft); text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+.rec-order .v { font-size: 11.5px; color: var(--soft); margin-top: 3px; }
+.empty { text-align: center; padding: 52px 20px; color: var(--soft); }
+
+/* ---------- modal ---------- */
+.modal-overlay { position: fixed; inset: 0; background: rgba(16,20,22,.46); backdrop-filter: blur(2px); display: grid; place-items: center; z-index: 50; padding: 20px; animation: fade .18s ease both; }
+.modal { background: #fff; border-radius: 18px; max-width: 430px; width: 100%; box-shadow: var(--shadow); overflow: hidden; position: relative; }
+.modal-body { padding: 28px; }
+.modal h3 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 6px; }
+.modal .price { font-size: 34px; font-weight: 800; letter-spacing: -.02em; margin: 16px 0 4px; }
+.modal .price span { font-size: 15px; font-weight: 600; color: var(--soft); }
+.modal ul { list-style: none; padding: 0; margin: 18px 0 24px; }
+.modal ul li { display: flex; gap: 9px; align-items: flex-start; font-size: 14px; margin-bottom: 10px; }
+.modal ul li svg { flex: none; margin-top: 2px; color: var(--accent); }
+.modal .note { font-size: 12px; color: var(--faint); margin-top: 14px; text-align: center; line-height: 1.5; }
+.modal-x { position: absolute; top: 16px; right: 18px; color: var(--soft); font-size: 22px; line-height: 1; z-index: 2; }
+
+/* ---------- toast ---------- */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--ink); color: #fff; padding: 11px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 500; box-shadow: var(--shadow); z-index: 60; opacity: 0; transition: opacity .2s, transform .2s; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- report history ---------- */
+.hist-row { display: flex; align-items: center; gap: 12px; padding: 13px 20px; cursor: pointer; transition: background .12s; }
+.hist-row + .hist-row { border-top: 1px solid var(--line); }
+.hist-row:hover { background: #FAFBFA; }
+.hist-main { flex: 1; min-width: 0; }
+.hist-when { font-size: 13.5px; font-weight: 600; }
+.hist-sub { font-size: 12px; color: var(--soft); margin-top: 2px; }
+.hist-view { font-size: 12.5px; font-weight: 600; color: var(--accent); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; flex-direction: row; align-items: center; padding: 12px 16px; }
+  .side-logo { padding: 0; }
+  .side-nav { flex-direction: row; margin-left: 12px; }
+  .side-foot { margin: 0 0 0 auto; padding: 0; border: none; display: flex; gap: 8px; align-items: center; }
+  .side-user { display: none; }
+  .land-hero { grid-template-columns: 1fr; }
+  .land-art { display: none; }
+  .auth { grid-template-columns: 1fr; }
+  .auth-brand { display: none; }
+}
+
+</style></head><body>
+<div id="app"></div>
+<script>
+/* ============================================================
+   RevUp v2 — app logic (vanilla JavaScript)
+
+   PAGES
+     Landing  → Auth (sign up / log in) → Dashboard / Stores / Store detail
+     Store detail has TWO pages: Statistics and Recommendations.
+
+   IMPORTANT — this is a FRONT-END PROTOTYPE.
+     • Accounts/passwords/payment are stored in the browser (not secure for
+       production — passwords must be hashed on a server).
+     • Email notifications on registration and the LIVE cash-register pull
+       both need the backend (see backend_plan.md). The design doesn't change
+       when you add the backend — the data just comes from your server.
+   ============================================================ */
+
+/* ---------- storage (localStorage + in-memory fallback) ---------- */
+const DB = (() => {
+  let mem = {}, ok = false;
+  try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); ok = true; } catch (e) {}
+  return {
+    get(k) { try { return ok ? JSON.parse(localStorage.getItem(k)) : (mem[k] ?? null); } catch (e) { return mem[k] ?? null; } },
+    set(k, v) { try { ok ? localStorage.setItem(k, JSON.stringify(v)) : (mem[k] = v); } catch (e) { mem[k] = v; } },
+  };
+})();
+const getUsers = () => DB.get("revup_users") || {};
+const saveUsers = (u) => DB.set("revup_users", u);
+const getSession = () => DB.get("revup_session");
+// Keep ONE live copy of the signed-in user so edits are saved and read back consistently.
+let _userCache = null, _userCacheEmail = null;
+function setSession(e) { DB.set("revup_session", e); if (!e) { _userCache = null; _userCacheEmail = null; } }
+function currentUser() {
+  const e = getSession();
+  if (!e) { _userCache = null; _userCacheEmail = null; return null; }
+  if (_userCache && _userCacheEmail === e) return _userCache;
+  _userCache = getUsers()[e] || null; _userCacheEmail = e;
+  return _userCache;
+}
+function persistUser(user) {
+  const u = getUsers(); u[user.email] = user; saveUsers(u);
+  _userCache = user; _userCacheEmail = user.email;
+}
+
+const tg = (n) => "₸" + Math.round(n).toLocaleString("ru-RU");
+const sum = (a) => a.reduce((s, v) => s + v, 0);
+const fmt = (n) => Math.round(n).toLocaleString("ru-RU");
+
+/* ---------- sample data ---------- */
+function rng(seed) { let s = seed || 1; return () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }; }
+const PRODUCTS = [
+  { name: "Milk 1L",            base: 22, wknd: 1.3, trend: 0.010,  sh: 5,  noise: 0.18, stock: 30, price: 450 },
+  { name: "White bread",        base: 30, wknd: 1.2, trend: 0.000,  sh: 3,  noise: 0.15, stock: 20, price: 220 },
+  { name: "Eggs (dozen)",       base: 14, wknd: 1.4, trend: 0.020,  sh: 21, noise: 0.20, stock: 18, price: 1100 },
+  { name: "Bananas (kg)",       base: 18, wknd: 1.1, trend: -0.018, sh: 6,  noise: 0.22, stock: 40, price: 750 },
+  { name: "Coca-Cola 1L",       base: 16, wknd: 1.6, trend: 0.014,  sh: 0,  noise: 0.25, stock: 25, price: 600 },
+  { name: "Yogurt cup",         base: 12, wknd: 1.2, trend: -0.022, sh: 10, noise: 0.20, stock: 60, price: 320 },
+  { name: "Chocolate bar",      base: 9,  wknd: 1.5, trend: 0.008,  sh: 0,  noise: 0.30, stock: 15, price: 480 },
+  { name: "Bottled water 5L",   base: 7,  wknd: 1.1, trend: 0.006,  sh: 0,  noise: 0.20, stock: 12, price: 540 },
+  { name: "Dishwashing liquid", base: 3,  wknd: 1.0, trend: -0.004, sh: 0,  noise: 0.40, stock: 22, price: 890 },
+  { name: "Shampoo 400ml",      base: 2,  wknd: 1.0, trend: -0.030, sh: 0,  noise: 0.50, stock: 30, price: 1450 },
+];
+function generateSales(seed) {
+  const r = rng(seed), days = 365, start = new Date();
+  start.setDate(start.getDate() - days);
+  const rows = [];
+  for (const p of PRODUCTS) {
+    const baseAdj = p.base * (0.85 + r() * 0.4);
+    for (let d = 0; d < days; d++) {
+      const date = new Date(start); date.setDate(start.getDate() + d);
+      const dow = date.getDay();
+      const weekend = (dow === 0 || dow === 6) ? p.wknd : 1;
+      const noise = 1 + (r() - 0.5) * 2 * p.noise;
+      const q = Math.max(0, Math.round((baseAdj + p.trend * d) * weekend * noise));
+      rows.push({ date: date.toISOString().slice(0, 10), product: p.name, quantity: q, price: p.price, shelfLife: p.sh || null, stock: p.stock });
+    }
+  }
+  return rows;
+}
+let storeSeed = 100;
+// New stores start empty — the owner uploads a file or connects a cash register.
+const makeStore = (name, location) => ({ id: "s" + Date.now() + Math.floor(Math.random() * 999), name, location, sales: [], reports: [] });
+// a store has real data only once a file is uploaded or an API is connected
+const hasData = (s) => !!((s.connection && s.connection.apiKey) || (s.source && s.source.type === "csv")) && s.sales && s.sales.length > 0;
+
+/* ---------- analytics (the AI) ---------- */
+const stdev = (a) => { if (!a.length) return 0; const m = sum(a) / a.length; return Math.sqrt(sum(a.map((v) => (v - m) ** 2)) / a.length); };
+
+function analyze(sales, periodDays) {
+  // anchor the window to the data's own latest date (so uploaded historical files work)
+  let maxStr = "";
+  for (const s of sales) if (s.date && s.date !== "n/a" && s.date > maxStr) maxStr = s.date;
+  const noDates = !maxStr;
+  const end = noDates ? null : new Date(maxStr);
+  const cutoff = noDates ? null : (() => { const c = new Date(end); c.setDate(end.getDate() - periodDays); return c; })();
+  const byProd = {};
+  for (const s of sales) {
+    const inPeriod = noDates ? true : (new Date(s.date) >= cutoff);
+    const g = byProd[s.product] || (byProd[s.product] = { product: s.product, price: s.price, sh: s.shelfLife, stock: s.stock, periodQty: 0, periodDaily: [], allSorted: [] });
+    g.allSorted.push(s);
+    if (inPeriod) { g.periodQty += s.quantity; g.periodDaily.push(s.quantity); }
+  }
+  const items = Object.values(byProd).map((g) => {
+    g.allSorted.sort((a, b) => a.date.localeCompare(b.date));
+    const recent = g.allSorted.slice(-14).map((x) => x.quantity);
+    const recentAvg = recent.length ? sum(recent) / recent.length : 0;
+    const earlier = g.allSorted.slice(-28, -14).map((x) => x.quantity);
+    const earlierAvg = earlier.length ? sum(earlier) / earlier.length : recentAvg;
+    const trendPct = earlierAvg > 0 ? (recentAvg - earlierAvg) / earlierAvg : 0;
+    const avgDaily = g.periodQty / periodDays, std = stdev(g.periodDaily);
+    const forecastDaily = 0.65 * recentAvg + 0.35 * avgDaily, horizon = 9;
+    let target = Math.round(forecastDaily * horizon + 1.65 * std * Math.sqrt(horizon));
+    const perishable = g.sh && g.sh > 0, sellable = perishable ? forecastDaily * g.sh : Infinity;
+    let trimmed = false;
+    if (perishable && target > sellable * 1.1) { target = Math.round(sellable); trimmed = true; }
+    let order = Math.max(0, Math.round(target - g.stock)), expiryRisk = false;
+    if (perishable && g.stock > sellable * 1.15) { expiryRisk = true; order = 0; }
+    let status = "steady";
+    if (expiryRisk) status = "expiry";
+    else if (trendPct > 0.15) status = "rising";
+    else if (trendPct < -0.15) status = "falling";
+    else if (avgDaily < 3 && trendPct <= 0) status = "slow";
+    return { product: g.product, price: g.price, perishable, trimmed, expiryRisk, status, trendPct,
+      qty: g.periodQty, revenue: g.periodQty * g.price, order, orderValue: order * g.price,
+      wasteValue: expiryRisk ? Math.round((g.stock - sellable) * g.price) : 0 };
+  });
+  const ranking = [...items].sort((a, b) => b.qty - a.qty);
+  const recs = [...items].sort((a, b) => b.order - a.order);
+  return { ranking, recs, totalUnits: sum(items.map((x) => x.qty)), totalRevenue: sum(items.map((x) => x.revenue)),
+    products: items.length, orderValue: sum(items.map((x) => x.orderValue)), wasteValue: sum(items.map((x) => x.wasteValue)),
+    maxQty: Math.max(1, ...items.map((x) => x.qty)) };
+}
+
+// revenue trend buckets for the line chart
+function salesSeries(sales, periodDays, buckets) {
+  let maxStr = "";
+  for (const s of sales) if (s.date && s.date !== "n/a" && s.date > maxStr) maxStr = s.date;
+  const arr = Array(buckets).fill(0);
+  if (!maxStr) { // no dates: spread by row order so the chart still shows shape
+    sales.forEach((s, i) => { const idx = Math.min(buckets - 1, Math.floor((i / Math.max(1, sales.length)) * buckets)); arr[idx] += s.quantity * s.price; });
+    return arr;
+  }
+  const end = new Date(maxStr), start = new Date(end); start.setDate(end.getDate() - periodDays);
+  const span = (end - start) || 1;
+  for (const s of sales) {
+    const d = new Date(s.date); if (d < start || d > end) continue;
+    let i = Math.floor(((d - start) / span) * buckets); i = Math.max(0, Math.min(buckets - 1, i));
+    arr[i] += s.quantity * s.price;
+  }
+  return arr;
+}
+function lineChart(values) {
+  const w = 560, h = 150, pad = 6, max = Math.max(1, ...values), n = values.length;
+  const x = (i) => pad + (i / (n - 1)) * (w - 2 * pad);
+  const y = (v) => h - pad - (v / max) * (h - 2 * pad - 6);
+  const pts = values.map((v, i) => [x(i), y(v)]);
+  const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  const area = line + ` L ${x(n - 1).toFixed(1)} ${h - pad} L ${x(0).toFixed(1)} ${h - pad} Z`;
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" preserveAspectRatio="none" style="display:block;height:150px">
+    <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--accent)" stop-opacity=".20"/>
+      <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#lg)"/>
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>`;
+}
+
+const STATUS = {
+  rising:  { label: "Rising demand", color: "var(--blue)",  soft: "var(--blue-soft)" },
+  falling: { label: "Falling — order less", color: "var(--red)", soft: "var(--red-soft)" },
+  slow:    { label: "Slow mover", color: "var(--amber)", soft: "var(--amber-soft)" },
+  expiry:  { label: "Overstocked — will expire", color: "var(--red)", soft: "var(--red-soft)" },
+  steady:  { label: "Steady", color: "var(--accent)", soft: "var(--accent-soft)" },
+};
+
+/* ---------- icons ---------- */
+const ICON = {
+  logo:  '<svg width="18" height="18" viewBox="0 0 24 24"><g fill="#fff"><rect x="3.5" y="12" width="4.3" height="8.5" rx="1.6"/><rect x="9.85" y="7.5" width="4.3" height="13" rx="1.6"/><rect x="16.2" y="3" width="4.3" height="17.5" rx="1.6"/></g></svg>',
+  check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+  grid:  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+  store: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>',
+  store2:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>',
+  logout:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>',
+  plus:  '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  plug:  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6M15 2v6M7 8h10v3a5 5 0 0 1-10 0V8zM12 16v6"/></svg>',
+  sync:  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></svg>',
+  spark: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>',
+  stats: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  back:  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  search:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>',
+  pdf:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>',
+  upload:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>',
+};
+const logoMark = (lg) => `<span class="logo-mark${lg ? " lg" : ""}">${ICON.logo}</span>`;
+
+/* ---------- router ---------- */
+const state = { view: "landing", authMode: "signup", storeId: null, period: 30, tab: "stats", report: null };
+const app = () => document.getElementById("app");
+function navigate(view, extra = {}) { Object.assign(state, { view, ...extra }); render(); }
+
+function render() {
+  const u = currentUser();
+  if (!u) { state.view === "auth" ? renderAuth() : renderLanding(); return; }
+  if (state.view === "store") return renderStore();
+  if (state.view === "stores") return renderStores();
+  return renderDashboard();
+}
+
+/* ============================================================
+   LANDING
+   ============================================================ */
+function renderLanding() {
+  app().innerHTML = `
+  <div class="landing fade">
+    <div class="land-nav">
+      <span class="logo">${logoMark()} RevUp</span><span class="sp"></span>
+      <button class="btn btn-ghost" id="l-signin" style="margin-right:10px">Sign in</button>
+      <button class="btn btn-primary" id="l-start">Get started</button>
+    </div>
+    <div class="land-hero">
+      <div>
+        <h1>Order the right amount.<br><span class="g">Waste nothing.</span></h1>
+        <p>RevUp reads your store's sales, ranks what's really selling, and tells you exactly what to reorder — and what to stop ordering before it spoils.</p>
+        <div class="land-cta">
+          <button class="btn btn-primary btn-lg" id="l-start2">Start free</button>
+          <button class="btn btn-ghost btn-lg" id="l-signin2">I have an account</button>
+        </div>
+        <div class="land-points">
+          <div>${ICON.check} First report free</div>
+          <div>${ICON.check} Works with your cash register</div>
+          <div>${ICON.check} Built for retail in Kazakhstan</div>
+        </div>
+      </div>
+      <div class="land-art">
+        <div class="mini-tile"><div class="l">Revenue (30 days)</div><div class="v">₸2 419 120</div></div>
+        <div class="mini-tile"><div class="l">Top demand</div><div class="v">White bread · Milk · Eggs</div></div>
+        <div class="mini-tile"><div class="l">Sales trend</div>
+          <div class="bars"><span style="height:40%"></span><span style="height:55%"></span><span style="height:48%"></span><span style="height:70%"></span><span style="height:62%"></span><span style="height:85%"></span><span style="height:100%"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  const go = (m) => navigate("auth", { authMode: m });
+  document.getElementById("l-start").onclick = () => go("signup");
+  document.getElementById("l-start2").onclick = () => go("signup");
+  document.getElementById("l-signin").onclick = () => go("login");
+  document.getElementById("l-signin2").onclick = () => go("login");
+}
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+function renderAuth() {
+  const signup = state.authMode === "signup";
+  app().innerHTML = `
+  <div class="auth fade">
+    <div class="auth-brand">
+      <div class="logo">${logoMark()} RevUp</div>
+      <div>
+        <h1>Smart reordering for your stores.</h1>
+        <p>Turn your sales into a clear plan: what to order, how much, and what to cut.</p>
+        <ul class="auth-points">
+          <li>${ICON.check} Best-sellers ranked by real demand</li>
+          <li>${ICON.check} Reorder quantities for every product</li>
+          <li>${ICON.check} Waste caught before it costs you</li>
+        </ul>
+      </div>
+      <div style="color:rgba(255,255,255,.6);font-size:13px">© RevUp</div>
+    </div>
+    <div class="auth-form-wrap">
+      <div class="auth-card">
+        <h2>${signup ? "Create your account" : "Welcome back"}</h2>
+        <p class="sub">${signup ? "Start with your first report free." : "Sign in to your stores and reports."}</p>
+        ${signup ? `<div class="field"><label>Business name</label><input id="f-biz" placeholder="e.g. Astana Market LLP" /></div>` : ``}
+        <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="you@business.kz" /></div>
+        <div class="field"><label>Password</label><input id="f-pass" type="password" placeholder="••••••••" /></div>
+        <div class="form-error" id="f-err"></div>
+        <button class="btn btn-primary btn-block btn-lg" id="f-submit">${signup ? "Create account" : "Sign in"}</button>
+        <div class="auth-switch">${signup ? "Already registered?" : "New to RevUp?"}
+          <button id="f-toggle">${signup ? "Sign in" : "Create an account"}</button></div>
+        <div class="auth-back"><button id="f-home">← Back to home</button></div>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById("f-toggle").onclick = () => navigate("auth", { authMode: signup ? "login" : "signup" });
+  document.getElementById("f-home").onclick = () => navigate("landing");
+  document.getElementById("f-submit").onclick = signup ? doSignup : doLogin;
+  app().querySelectorAll("input").forEach((i) => i.addEventListener("keydown", (e) => { if (e.key === "Enter") (signup ? doSignup : doLogin)(); }));
+}
+const showErr = (m) => { const e = document.getElementById("f-err"); if (e) e.textContent = m; };
+function doSignup() {
+  const biz = (document.getElementById("f-biz").value || "").trim();
+  const email = (document.getElementById("f-email").value || "").trim().toLowerCase();
+  const pass = document.getElementById("f-pass").value || "";
+  if (!biz) return showErr("Please enter your business name.");
+  if (!/^\S+@\S+\.\S+$/.test(email)) return showErr("Please enter a valid email.");
+  if (pass.length < 6) return showErr("Password must be at least 6 characters.");
+  const users = getUsers();
+  if (users[email]) return showErr("An account with this email already exists.");
+  const user = { business: biz, email, password: pass, subscribed: false, reportsUsed: 0, stores: [makeStore("Main Store", "Astana")] };
+  persistUser(user); setSession(email);
+  notifyOwnerOfSignup(user);   // ← registration notification hook (see backend_plan.md)
+  navigate("dashboard");
+}
+function doLogin() {
+  const email = (document.getElementById("f-email").value || "").trim().toLowerCase();
+  const pass = document.getElementById("f-pass").value || "";
+  const user = getUsers()[email];
+  if (!user || user.password !== pass) return showErr("Wrong email or password.");
+  setSession(email); navigate("dashboard");
+}
+function logout() { setSession(null); navigate("landing"); }
+
+/* Registration notification — prototype only logs it.
+   REAL VERSION: your backend sends an email to your Gmail when this runs.
+   See backend_plan.md → "Get notified when a customer registers". */
+function notifyOwnerOfSignup(user) {
+  console.log("[RevUp] New registration:", user.business, user.email, new Date().toISOString());
+}
+
+/* ============================================================
+   APP SHELL (sidebar + main)
+   ============================================================ */
+function shell(active, mainHTML) {
+  const u = currentUser();
+  const item = (k, label, icon) => `<button class="side-link ${active === k ? "active" : ""}" data-nav="${k}">${icon}<span>${label}</span></button>`;
+  return `<div class="shell">
+    <aside class="sidebar">
+      <div class="side-logo">${logoMark()} RevUp</div>
+      <nav class="side-nav">
+        ${item("dashboard", "Dashboard", ICON.grid)}
+        ${item("stores", "Stores", ICON.store2)}
+      </nav>
+      <div class="side-foot">
+        <div class="side-user"><div class="side-avatar">${(u.business || "?").slice(0, 1).toUpperCase()}</div>
+          <div style="min-width:0"><div class="side-biz">${u.business}${u.subscribed ? " · Pro" : ""}</div><div class="side-mail">${u.email}</div></div></div>
+        <button class="side-link" id="side-logout">${ICON.logout}<span>Log out</span></button>
+      </div>
+    </aside>
+    <main class="main"><div class="main-inner fade">${mainHTML}</div></main>
+  </div>`;
+}
+function wireShell() {
+  app().querySelectorAll("[data-nav]").forEach((b) => b.onclick = () => navigate(b.getAttribute("data-nav")));
+  const lo = document.getElementById("side-logout"); if (lo) lo.onclick = logout;
+}
+
+/* ============================================================
+   DASHBOARD (across all stores)
+   ============================================================ */
+function renderDashboard() {
+  const u = currentUser();
+  const withData = u.stores.filter(hasData);
+  const reports = withData.map((s) => analyze(s.sales, 30));
+  const totalRev = sum(reports.map((r) => r.totalRevenue));
+  const totalUnits = sum(reports.map((r) => r.totalUnits));
+  const totalOrder = sum(reports.map((r) => r.orderValue));
+  // combined revenue trend
+  const buckets = 12, combined = Array(buckets).fill(0);
+  withData.forEach((s) => salesSeries(s.sales, 30, buckets).forEach((v, i) => combined[i] += v));
+
+  app().innerHTML = shell("dashboard", `
+    <div class="page-head"><div><h2>Dashboard</h2><p>Your business at a glance — last 30 days.</p></div></div>
+    <div class="tiles">
+      <div class="tile"><div class="label">Revenue</div><div class="value accent tnum">${tg(totalRev)}</div></div>
+      <div class="tile"><div class="label">Units sold</div><div class="value tnum">${fmt(totalUnits)}</div></div>
+      <div class="tile"><div class="label">Stores</div><div class="value tnum">${u.stores.length}</div></div>
+      <div class="tile"><div class="label">Suggested order</div><div class="value tnum">${tg(totalOrder)}</div></div>
+    </div>
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head">Revenue trend (30 days)</div>
+      <div style="padding:18px 12px 10px">${lineChart(combined)}</div>
+    </div>
+    <div class="page-head" style="margin-bottom:14px"><div><h2 style="font-size:18px">Your stores</h2></div>
+      <button class="btn btn-ghost" data-nav="stores">View all ${ICON.back ? "" : ""}</button></div>
+    <div class="store-grid">${u.stores.map(storeCard).join("")}</div>`);
+  wireShell();
+  app().querySelectorAll("[data-store]").forEach((el) => el.onclick = () => navigate("store", { storeId: el.getAttribute("data-store"), period: 30, tab: "stats", report: null }));
+}
+
+/* ============================================================
+   STORES
+   ============================================================ */
+function renderStores() {
+  const u = currentUser();
+  app().innerHTML = shell("stores", `
+    <div class="page-head">
+      <div><h2>Your stores</h2><p>Pick a store to see its statistics and reorder plan.</p></div>
+      <button class="btn btn-primary" id="add-store">${ICON.plus} Add store</button>
+    </div>
+    <div class="store-grid">
+      ${u.stores.map(storeCard).join("")}
+      <button class="store-add" id="add-store-2">${ICON.plus}<span>Add a store</span></button>
+    </div>`);
+  wireShell();
+  document.getElementById("add-store").onclick = openAddStore;
+  document.getElementById("add-store-2").onclick = openAddStore;
+  app().querySelectorAll("[data-store]").forEach((el) => el.onclick = () => navigate("store", { storeId: el.getAttribute("data-store"), period: 30, tab: "stats", report: null }));
+}
+function storeCard(s) {
+  const real = hasData(s);
+  const a = real ? analyze(s.sales, 30) : null;
+  let status;
+  if (s.connection && s.connection.apiKey)
+    status = `<span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--accent);font-weight:600"><span class="dot" style="background:var(--accent)"></span>API · ${s.connection.provider}</span>`;
+  else if (s.source && s.source.type === "csv")
+    status = `<span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--blue);font-weight:600"><span class="dot" style="background:var(--blue)"></span>Sales file</span>`;
+  else
+    status = `<span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--faint);font-weight:600"><span class="dot" style="background:var(--faint)"></span>No data yet</span>`;
+  return `<div class="store-card" data-store="${s.id}">
+    <div class="ico">${ICON.store}</div>
+    <h3>${s.name}</h3><div class="loc">${s.location || "—"}</div>
+    <div style="margin-top:8px">${status}</div>
+    <div class="meta"><div>Revenue (30d)<b class="tnum">${real ? tg(a.totalRevenue) : "—"}</b></div><div>Units sold<b class="tnum">${real ? fmt(a.totalUnits) : "—"}</b></div></div>
+  </div>`;
+}
+function openAddStore() {
+  modal(`<h3>Add a store</h3>
+    <p class="muted" style="font-size:13.5px;margin:0 0 18px">The store starts empty. Upload a sales file or connect its cash register inside the store.</p>
+    <div class="field"><label>Store name</label><input id="ns-name" placeholder="e.g. Branch 2, Almaly" /></div>
+    <div class="field"><label>Location</label><input id="ns-loc" placeholder="e.g. Almaty" /></div>
+    <button class="btn btn-primary btn-block" id="ns-save" style="margin-top:6px">Add store</button>`,
+    (close) => {
+      document.getElementById("ns-save").onclick = () => {
+        const name = (document.getElementById("ns-name").value || "").trim();
+        if (!name) return;
+        const u = currentUser(); u.stores.push(makeStore(name, (document.getElementById("ns-loc").value || "").trim() || "—"));
+        persistUser(u); close(); renderStores();
+      };
+    });
+}
+
+/* ============================================================
+   STORE DETAIL — Statistics page + Recommendations page
+   ============================================================ */
+const PERIODS = [{ k: 7, label: "Weekly" }, { k: 30, label: "Monthly" }, { k: 365, label: "Yearly" }];
+
+function renderStore() {
+  const u = currentUser();
+  const store = u.stores.find((s) => s.id === state.storeId);
+  if (!store) return navigate("stores");
+  const hasReport = state.report && state.report.storeId === store.id && state.report.period === state.period;
+
+  app().innerHTML = shell("stores", `
+    <a class="back-link" id="back">${ICON.back} All stores</a>
+    <div class="page-head">
+      <div><h2>${store.name}</h2><p>${store.location || "—"}</p></div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div class="seg" id="seg">${PERIODS.map((p) => `<button data-p="${p.k}" class="${p.k === state.period ? "active" : ""}">${p.label}</button>`).join("")}</div>
+        <button class="btn btn-primary" id="gen">${ICON.spark} Take report</button>
+      </div>
+    </div>
+    ${connBar(store)}
+    ${hasReport ? reportShell(store)
+      : `<div class="panel"><div class="empty">${hasData(store)
+          ? `Tap <b>Take report</b> to generate statistics and recommendations.`
+          : `This store has no sales yet. <b>Upload a CSV</b> or <b>connect a cash register</b> above to begin.`}</div></div>`}
+    ${historyPanel(store)}`);
+  wireShell();
+  document.getElementById("back").onclick = () => navigate("stores");
+  document.getElementById("seg").querySelectorAll("button").forEach((b) =>
+    b.onclick = () => { state.period = Number(b.getAttribute("data-p")); state.report = null; renderStore(); });
+  document.getElementById("gen").onclick = () => takeReport(store);
+  wireConn(store);
+  if (hasReport) wireReport(store);
+  app().querySelectorAll("[data-rep]").forEach((el) => el.onclick = () => viewReport(store, el.getAttribute("data-rep")));
+}
+
+function historyPanel(store) {
+  const reps = store.reports || [];
+  if (!reps.length) return "";
+  const row = (r) => {
+    const d = new Date(r.at);
+    const when = d.toLocaleDateString("ru-RU") + " · " + d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+    const periodLabel = (PERIODS.find((p) => p.k === r.period) || {}).label || "";
+    const active = state.report && state.report.at === r.at;
+    return `<div class="hist-row" data-rep="${r.id}">
+      <div class="hist-main"><div class="hist-when">${when}</div>
+        <div class="hist-sub">${periodLabel} report · ${tg(r.data.totalRevenue)} · ${fmt(r.data.totalUnits)} units</div></div>
+      <span class="hist-view">${active ? "Viewing" : "View"}</span></div>`;
+  };
+  return `<div class="panel" style="margin-top:18px">
+    <div class="panel-head">Report history</div>
+    ${reps.map(row).join("")}</div>`;
+}
+
+function takeReport(store) {
+  if (!hasData(store)) { toast("Upload a file or connect a cash register first"); return; }
+  const u = currentUser();
+  if (!u.subscribed) {
+    if (u.reportsUsed >= 1) return showPaywall(store);
+    u.reportsUsed += 1;
+  }
+  const data = analyze(store.sales, state.period);
+  const series = salesSeries(store.sales, state.period, 12);
+  const entry = { id: "r" + Date.now(), at: Date.now(), period: state.period, data, series };
+  store.reports = store.reports || [];
+  store.reports.unshift(entry);
+  if (store.reports.length > 20) store.reports.length = 20;  // keep last 20
+  persistUser(u);
+  state.report = { storeId: store.id, period: state.period, data, series, at: entry.at };
+  state.tab = "stats";
+  renderStore();
+}
+function viewReport(store, id) {
+  const e = (store.reports || []).find((r) => r.id === id);
+  if (!e) return;
+  state.report = { storeId: store.id, period: e.period, data: e.data, series: e.series, at: e.at };
+  state.period = e.period; state.tab = "stats";
+  renderStore();
+}
+
+function reportShell(store) {
+  return `<div class="tabs" id="tabs">
+      <button data-tab="stats" class="${state.tab === "stats" ? "active" : ""}">${ICON.stats} Statistics</button>
+      <button data-tab="recs" class="${state.tab === "recs" ? "active" : ""}">${ICON.spark} Recommendations</button>
+    </div>
+    <div id="tab-body">${state.tab === "stats" ? statsPage(store) : recsPage(store)}</div>`;
+}
+function wireReport(store) {
+  document.getElementById("tabs").querySelectorAll("button").forEach((b) =>
+    b.onclick = () => { state.tab = b.getAttribute("data-tab"); renderStore(); });
+  if (state.tab === "stats") wireSearch("stat-search", "rank-row");
+  else { wireSearch("rec-search", "rec-row"); const p = document.getElementById("pdf"); if (p) p.onclick = () => printReport(store); }
+}
+
+/* ---------- Statistics page ---------- */
+function statsPage(store) {
+  const a = state.report.data, period = PERIODS.find((p) => p.k === state.period).label.toLowerCase();
+  const series = (state.report && state.report.series) || salesSeries(store.sales, state.period, 12);
+  return `
+    <div class="tiles">
+      <div class="tile"><div class="label">Revenue (${period})</div><div class="value accent tnum">${tg(a.totalRevenue)}</div></div>
+      <div class="tile"><div class="label">Units sold</div><div class="value tnum">${fmt(a.totalUnits)}</div></div>
+      <div class="tile"><div class="label">Products sold</div><div class="value tnum">${a.products}</div></div>
+      <div class="tile"><div class="label">Avg item price</div><div class="value tnum">${tg(a.totalRevenue / Math.max(1, a.totalUnits))}</div></div>
+    </div>
+    <div class="panel" style="margin-bottom:18px">
+      <div class="panel-head">Revenue trend</div>
+      <div style="padding:18px 12px 10px">${lineChart(series)}</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">Top goods by demand
+        <span class="search">${ICON.search}<input id="stat-search" placeholder="Search product" /></span></div>
+      <div id="rank-list">
+        ${a.ranking.map((x, i) => `
+          <div class="rank-row" data-name="${x.product.toLowerCase()}">
+            <div class="rank-no">${i + 1}</div>
+            <div class="rank-main"><div class="rank-name">${x.product}</div>
+              <div class="rank-bar"><span style="width:${Math.round((x.qty / a.maxQty) * 100)}%"></span></div></div>
+            <div class="rank-qty tnum">${fmt(x.qty)}<small>${tg(x.revenue)}</small></div>
+          </div>`).join("")}
+      </div>
+    </div>`;
+}
+
+/* ---------- Recommendations page ---------- */
+function recsPage(store) {
+  const a = state.report.data;
+  return `
+    <div class="tiles">
+      <div class="tile"><div class="label">Suggested order value</div><div class="value accent tnum">${tg(a.orderValue)}</div><div class="delta">${a.recs.filter((r) => r.order > 0).length} products to order</div></div>
+      <div class="tile"><div class="label">Waste at risk</div><div class="value tnum" style="color:var(--amber)">${tg(a.wasteValue)}</div><div class="delta">flagged to reduce</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">Reorder recommendations
+        <span style="display:flex;gap:10px;align-items:center">
+          <span class="tag-ai">${ICON.spark} AI</span>
+          <span class="search">${ICON.search}<input id="rec-search" placeholder="Search product" /></span>
+          <button class="btn btn-ghost" id="pdf" style="padding:7px 12px;font-size:13px">${ICON.pdf} PDF</button>
+        </span></div>
+      <div id="rec-list">
+        ${a.recs.map((x) => {
+          const s = STATUS[x.status];
+          return `<div class="rec-row" data-name="${x.product.toLowerCase()}" style="border-left-color:${s.color}">
+            <div class="rec-main"><div class="rec-name">${x.product}</div>
+              <span class="pill" style="color:${s.color};background:${s.soft}">${s.label}</span>
+              ${x.trimmed && !x.expiryRisk ? '<span style="font-size:11px;color:var(--amber);margin-left:6px">trimmed to avoid waste</span>' : ""}</div>
+            <div class="rec-order"><div class="n tnum" style="color:${x.order ? "var(--ink)" : "var(--amber)"}">${x.order}</div>
+              <div class="u">order</div>${x.order ? `<div class="v tnum">${tg(x.orderValue)}</div>` : ""}</div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+}
+
+/* ---------- search filter (no re-render, keeps focus) ---------- */
+function wireSearch(inputId, rowClass) {
+  const inp = document.getElementById(inputId); if (!inp) return;
+  inp.oninput = () => {
+    const q = inp.value.trim().toLowerCase();
+    app().querySelectorAll("." + rowClass).forEach((r) => {
+      r.style.display = r.getAttribute("data-name").includes(q) ? "" : "none";
+    });
+  };
+}
+
+/* ---------- PDF (browser print → Save as PDF) ---------- */
+function printReport(store) {
+  const r = state.report; if (!r) return;
+  const a = r.data, period = PERIODS.find((p) => p.k === r.period).label;
+  const rows = (arr, fn) => arr.map(fn).join("");
+  const html = `<html><head><meta charset="utf-8"><title>RevUp — ${store.name}</title>
+    <style>
+      body{font-family:Inter,Arial,sans-serif;color:#14181C;margin:32px;}
+      h1{font-size:22px;margin:0 0 2px} .sub{color:#687078;font-size:13px;margin:0 0 18px}
+      h2{font-size:14px;margin:24px 0 8px;border-bottom:1px solid #E8EAE7;padding-bottom:6px}
+      table{width:100%;border-collapse:collapse;font-size:13px}
+      td,th{text-align:left;padding:6px 4px;border-bottom:1px solid #F0F1EF}
+      th{color:#687078;font-weight:600} .r{text-align:right}
+      .tot{display:flex;gap:30px;font-size:13px;margin-bottom:6px}
+      .tot b{font-size:18px;display:block}
+    </style></head><body>
+    <h1>RevUp report — ${store.name}</h1>
+    <div class="sub">${store.location || ""} · ${period} · ${new Date().toLocaleDateString("ru-RU")}</div>
+    <div class="tot"><div>Revenue<b>${tg(a.totalRevenue)}</b></div><div>Units sold<b>${fmt(a.totalUnits)}</b></div><div>Suggested order<b>${tg(a.orderValue)}</b></div></div>
+    <h2>Order these</h2>
+    <table><tr><th>Product</th><th class="r">Order</th><th class="r">Value</th></tr>
+      ${rows(a.recs.filter((x) => x.order > 0 && x.status !== "falling" && x.status !== "slow" && !x.expiryRisk), (x) => `<tr><td>${x.product}</td><td class="r">${x.order}</td><td class="r">${tg(x.orderValue)}</td></tr>`)}
+    </table>
+    <h2>Order less / waste risk</h2>
+    <table>${rows(a.recs.filter((x) => x.expiryRisk || x.status === "falling" || x.status === "slow"), (x) => `<tr><td>${x.product}</td><td class="r">${STATUS[x.status].label}</td><td class="r">order ${x.order}</td></tr>`)}</table>
+    <h2>Top goods by demand</h2>
+    <table><tr><th>#</th><th>Product</th><th class="r">Units</th><th class="r">Revenue</th></tr>
+      ${rows(a.ranking.slice(0, 10), (x, i) => `<tr><td>${i + 1}</td><td>${x.product}</td><td class="r">${fmt(x.qty)}</td><td class="r">${tg(x.revenue)}</td></tr>`)}
+    </table>
+    <p style="color:#9AA2A8;font-size:11px;margin-top:24px">Generated by RevUp</p>
+    </body></html>`;
+  const win = window.open("", "_blank");
+  if (!win) { toast("Allow pop-ups to download the PDF"); return; }
+  win.document.write(html); win.document.close(); win.focus();
+  setTimeout(() => win.print(), 350);
+}
+
+/* ============================================================
+   POS CONNECTION
+   ============================================================ */
+const POS_PROVIDERS = ["Kaspi", "Webkassa", "SYNTERRA", "X2 POS", "1C", "Other"];
+function connBar(store) {
+  const c = store.connection;
+  if (c && c.apiKey) {
+    const last = c.lastSync ? new Date(c.lastSync).toLocaleString("ru-RU") : "not yet";
+    return `<div class="conn-bar"><span class="dot" style="background:var(--accent)"></span>
+      <span class="conn-text">Connected to <b>${c.provider}</b> (automatic) · last synced ${last}</span>
+      <span class="conn-actions">
+        <button class="btn btn-ghost" id="sync" style="padding:8px 14px">${ICON.sync} Sync sales</button>
+        <button class="btn btn-ghost" id="disconnect" style="padding:8px 13px">Disconnect</button></span></div>`;
+  }
+  if (store.source && store.source.type === "csv") {
+    return `<div class="conn-bar"><span class="dot" style="background:var(--blue)"></span>
+      <span class="conn-text">Sales file loaded · <b>${store.source.filename}</b> · ${fmt(store.source.count)} rows</span>
+      <span class="conn-actions">
+        <button class="btn btn-ghost" id="replace" style="padding:8px 14px">Replace file</button>
+        <button class="btn btn-ghost" id="clear" style="padding:8px 13px">Clear</button></span></div>`;
+  }
+  return `<div class="conn-bar"><span class="dot" style="background:var(--faint)"></span>
+    <span class="conn-text muted">Load this store's sales — automatic or by file:</span>
+    <span class="conn-actions">
+      <button class="btn btn-ghost" id="upload" style="padding:8px 14px">${ICON.upload} Upload CSV (manual)</button>
+      <button class="btn btn-primary" id="connect" style="padding:8px 14px">${ICON.plug} Connect API (automatic)</button></span></div>`;
+}
+function wireConn(store) {
+  const c = document.getElementById("connect"); if (c) c.onclick = () => openConnectModal(store);
+  const sy = document.getElementById("sync"); if (sy) sy.onclick = () => syncSales(store);
+  const d = document.getElementById("disconnect"); if (d) d.onclick = () => clearData(store, "Disconnected — store data cleared");
+  const up = document.getElementById("upload"); if (up) up.onclick = () => openUploadModal(store);
+  const rp = document.getElementById("replace"); if (rp) rp.onclick = () => openUploadModal(store);
+  const cl = document.getElementById("clear"); if (cl) cl.onclick = () => clearData(store, "Cleared — store data removed");
+}
+function clearData(store, msg) {
+  delete store.connection; delete store.source;
+  store.sales = [];
+  state.report = null; persistUser(currentUser()); renderStore(); toast(msg);
+}
+
+/* ---------- manual option: CSV import ---------- */
+function numOrNull(v) { if (v == null || v === "") return null; const n = Number(String(v).replace(/[^0-9.\-]/g, "")); return isNaN(n) ? null : n; }
+function detectColumns(fields) {
+  const used = new Set();
+  // tries candidates in priority order; claims the most specific column first
+  const pick = (cands) => {
+    for (const c of cands) {
+      const f = fields.find((fl) => !used.has(fl) && fl.toLowerCase().includes(c));
+      if (f) { used.add(f); return f; }
+    }
+    return undefined;
+  };
+  const product  = pick(["product", "товар", "тауар", "наимен", "item", "good", "sku", "name"]);
+  const quantity = pick(["quantity_sold", "qty_sold", "units_sold", "sold", "продан", "сатыл", "quantity", "qty", "units", "сан", "колич", "count"]);
+  const price    = pick(["sale_price", "sell_price", "unit_sale", "selling", "retail", "price", "цена", "баға", "cost", "стоим"]);
+  const date     = pick(["sale_date", "sold_date", "sell_date", "сатыл", "дата", "date", "day", "time", "күн"]);
+  const stock    = pick(["remaining", "on_hand", "onhand", "on hand", "stock", "остат", "қалд", "inventory", "balance", "нали"]);
+  const shelf    = pick(["shelf", "expiry", "expire", "срок", "жарам", "life"]);
+  return { product, quantity, price, date, stock, shelf };
+}
+function parseCSV(text) {
+  text = String(text).replace(/^\uFEFF/, "");
+  const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").filter((l) => l.trim().length);
+  if (!lines.length) return { fields: [], rows: [] };
+  const parseLine = (line) => {
+    const out = []; let cur = "", q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (q) { if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+      else { if (ch === '"') q = true; else if (ch === ",") { out.push(cur); cur = ""; } else cur += ch; }
+    }
+    out.push(cur); return out;
+  };
+  const fields = parseLine(lines[0]).map((f) => f.trim());
+  const rows = lines.slice(1).map((l) => { const cells = parseLine(l); const o = {}; fields.forEach((f, i) => o[f] = cells[i]); return o; });
+  return { fields, rows };
+}
+/* Build sales from an explicit column mapping the user confirmed.
+   This is what lets RevUp read ANY format — the mapping resolves it. */
+function buildSalesFromMap(store, rows, map, filename) {
+  const sales = rows.map((r) => ({
+    date: map.date ? String(r[map.date]).slice(0, 10) : "n/a",
+    product: r[map.product],
+    quantity: numOrNull(r[map.quantity]),
+    price: map.price ? (numOrNull(r[map.price]) || 0) : 0,
+    stock: map.stock ? (numOrNull(r[map.stock]) || 0) : 0,
+    shelfLife: map.shelf ? numOrNull(r[map.shelf]) : null,
+  })).filter((r) => r.product && r.quantity != null);
+  if (!sales.length) return { ok: false, error: "No usable rows for the chosen columns." };
+  store.sales = sales;
+  store.source = { type: "csv", filename, count: sales.length };
+  delete store.connection;
+  state.report = null;
+  state.period = 365; // uploaded files usually span a year
+  persistUser(currentUser());
+  return { ok: true, count: sales.length };
+}
+
+function openUploadModal(store) {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.innerHTML = `<div class="modal"><button class="modal-x" data-close>&times;</button><div class="modal-body" id="up-body"></div></div>`;
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector("[data-close]").onclick = close;
+  overlay.onclick = (e) => { if (e.target === overlay) close(); };
+  const body = overlay.querySelector("#up-body");
+
+  function stepChoose() {
+    body.innerHTML = `<h3>Upload sales file (CSV)</h3>
+      <p class="muted" style="font-size:13.5px;margin:0 0 16px;line-height:1.55">Export a CSV from any cash system — <b>any column names work</b>. You'll confirm which column is which on the next step.</p>
+      <button class="btn btn-ghost btn-block" id="pick">${ICON.upload} Choose CSV file</button>
+      <input type="file" id="csv-file" accept=".csv" style="display:none" />
+      <div class="form-error" id="csv-err" style="margin-top:10px"></div>`;
+    const inp = body.querySelector("#csv-file");
+    body.querySelector("#pick").onclick = () => inp.click();
+    inp.onchange = () => {
+      const f = inp.files && inp.files[0]; if (!f) return;
+      const rd = new FileReader();
+      rd.onload = () => {
+        const { fields, rows } = parseCSV(String(rd.result));
+        if (!fields.length || !rows.length) { body.querySelector("#csv-err").textContent = "That file looks empty."; return; }
+        stepMap(f.name, fields, rows);
+      };
+      rd.onerror = () => { body.querySelector("#csv-err").textContent = "Could not read that file."; };
+      rd.readAsText(f);
+    };
+  }
+
+  function stepMap(filename, fields, rows) {
+    const guess = detectColumns(fields);
+    const opts = (sel) => `<option value="">— none —</option>` + fields.map((f) => `<option ${f === sel ? "selected" : ""}>${f}</option>`).join("");
+    const fieldRow = (key, label, req) => `<div class="field" style="margin-bottom:10px"><label>${label}${req ? " *" : ""}</label><select data-map="${key}">${opts(guess[key])}</select></div>`;
+    body.innerHTML = `<h3>Match your columns</h3>
+      <p class="muted" style="font-size:13px;margin:0 0 14px;line-height:1.5">RevUp guessed these from <b>${filename}</b>. Fix any that are wrong — this is how it reads <b>any</b> format.</p>
+      ${fieldRow("product", "Product name", true)}
+      ${fieldRow("quantity", "Quantity sold", true)}
+      ${fieldRow("price", "Sale price (for revenue)", false)}
+      ${fieldRow("date", "Sale date", false)}
+      ${fieldRow("stock", "Current stock", false)}
+      <div class="form-error" id="map-err"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-ghost" id="map-back">Back</button>
+        <button class="btn btn-primary" id="map-load" style="flex:1">Load ${fmt(rows.length)} rows</button>
+      </div>`;
+    body.querySelector("#map-back").onclick = stepChoose;
+    body.querySelector("#map-load").onclick = () => {
+      const map = {};
+      body.querySelectorAll("[data-map]").forEach((s) => map[s.getAttribute("data-map")] = s.value || undefined);
+      if (!map.product || !map.quantity) { body.querySelector("#map-err").textContent = "Please choose the Product and Quantity columns."; return; }
+      const res = buildSalesFromMap(store, rows, map, filename);
+      if (!res.ok) { body.querySelector("#map-err").textContent = res.error; return; }
+      close(); renderStore(); toast("Loaded " + res.count + " rows — now tap Take report");
+    };
+  }
+  stepChoose();
+}
+function openConnectModal(store) {
+  modal(`<h3>Connect cash register</h3>
+    <p class="muted" style="font-size:13.5px;margin:0 0 18px">Enter the API details from your cash system so RevUp can read sales automatically.</p>
+    <div class="field"><label>Cash system</label><select id="c-provider">${POS_PROVIDERS.map((p) => `<option>${p}</option>`).join("")}</select></div>
+    <div class="field"><label>API key</label><input id="c-key" type="password" placeholder="paste the API key from your POS" /></div>
+    <div class="field"><label>Merchant / store ID (optional)</label><input id="c-mid" placeholder="if your POS gives you one" /></div>
+    <div class="form-error" id="c-err"></div>
+    <button class="btn btn-primary btn-block" id="c-save">${ICON.plug} Connect</button>
+    <p class="note" style="text-align:left">Demo: the key is saved in this browser only. In the live product it's sent to RevUp's server (never kept in the browser), which talks to the cash system.</p>`,
+    (close) => {
+      document.getElementById("c-save").onclick = () => {
+        const key = (document.getElementById("c-key").value || "").trim();
+        if (!key) { document.getElementById("c-err").textContent = "Please paste your API key."; return; }
+        store.connection = { provider: document.getElementById("c-provider").value, apiKey: key, merchantId: (document.getElementById("c-mid").value || "").trim(), connectedAt: Date.now(), lastSync: null };
+        persistUser(currentUser()); close(); renderStore(); syncSales(store);
+      };
+    });
+}
+function syncSales(store) {
+  if (!store.connection) return;
+  store.sales = fetchSalesFromPOS(store.connection);
+  store.connection.lastSync = Date.now();
+  state.report = null;
+  persistUser(currentUser()); renderStore();
+  toast("Sales synced from " + store.connection.provider);
+}
+function fetchSalesFromPOS(conn) {
+  /* ============================================================
+     OPTION 2 — the live cash-register link plugs in HERE.
+     PROTOTYPE: returns fresh sample sales so the flow works now.
+     REAL VERSION (needs the backend): your server takes conn.apiKey,
+     calls the POS provider's API (Kaspi / Webkassa / ...), and returns
+     real rows of { date, product, quantity, price }. A static page can't
+     do this safely. Only this function moves to the server later.
+     ============================================================ */
+  return generateSales(Math.floor(Math.random() * 99999));
+}
+
+/* ============================================================
+   PAYWALL
+   ============================================================ */
+function showPaywall(store) {
+  modal(`<span class="tag-ai" style="background:var(--accent-soft)">RevUp Pro</span>
+    <h3 style="margin-top:14px">Your free report is used</h3>
+    <p class="muted" style="font-size:14px;margin:4px 0 0">Subscribe to generate unlimited reports for all your stores.</p>
+    <div class="price">₸40 000 <span>/ year</span></div>
+    <ul>
+      <li>${ICON.check} Unlimited weekly, monthly & yearly reports</li>
+      <li>${ICON.check} Reorder recommendations for every product</li>
+      <li>${ICON.check} Waste & overstock alerts across all stores</li>
+    </ul>
+    <button class="btn btn-primary btn-block btn-lg" id="subscribe">Subscribe — ₸40 000 / year</button>
+    <p class="note">Demo button. Real payment (Kaspi / card) connects with the backend.</p>`,
+    (close) => {
+      document.getElementById("subscribe").onclick = () => {
+        const u = currentUser(); u.subscribed = true; persistUser(u);
+        close(); takeReport(store);
+      };
+    });
+}
+
+/* ============================================================
+   shared modal + toast
+   ============================================================ */
+function modal(innerHTML, wire) {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.innerHTML = `<div class="modal"><button class="modal-x" data-close>&times;</button><div class="modal-body">${innerHTML}</div></div>`;
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector("[data-close]").onclick = close;
+  overlay.onclick = (e) => { if (e.target === overlay) close(); };
+  if (wire) wire(close);
+}
+function toast(msg) {
+  const t = document.createElement("div");
+  t.className = "toast"; t.textContent = msg; document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add("show"));
+  setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 260); }, 2200);
+}
+
+/* ---------- boot ---------- */
+render();
+
+</script></body></html>
